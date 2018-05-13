@@ -1,0 +1,11 @@
+.max_shadow {
+    box-shadow: none;
+    padding: 10px;
+    margin-top: -1px;
+    border-bottom: 1px solid grey;
+    border-top: 1px solid grey;
+}
+
+.max_shadow:hover {
+    box-shadow: 0 .6rem .9rem rgba(0,0,0,.075)
+}

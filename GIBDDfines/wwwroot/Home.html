@@ -1,0 +1,238 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Штрафы ГИБДД</title>
+
+    <!-- Bootstrap core CSS -->
+    <!--<link rel="stylesheet" href="lib2/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <!--<script src="lib2/bootstrap.min.js"></script>-->
+    <link href="css/style.css" rel="stylesheet" />
+</head>
+
+<body onload="LoadPunishments();">
+    <div class="container">
+
+        <!--Header-->
+        <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+            <h5 class="my-0 mr-md-auto font-weight-normal">Штрафы ГИБДД</h5>
+            <nav class="my-2 my-md-0 mr-md-3">
+                <a class="p-2 text-dark" href="#">Главная</a>
+                <a class="p-2 text-dark" href="#">Контакты</a>
+                <a class="p-2 text-dark" href="#">О приложении</a>
+            </nav>
+            <a class="btn btn-outline" href="#" data-toggle="modal" data-target="#exampleModal">Войти</a>
+        </div>
+        <!--End Header-->
+        <!--Main-->
+        <div>
+            <!--
+                <h1>Bootstrap</h1>
+                <p class="lead">Пример использования стилей и JS библиотеки Bootstrap</p>
+                <p><a href="https://getbootstrap.com/docs/4.1/getting-started/introduction/">Сам Bootstrap</a></p>
+                <p><a href="https://getbootstrap.com/docs/4.1/components/buttons/"> Компоненты</a></p>
+            -->
+            <br>
+            <!--<hr>-->
+            <h2>Список штрафов</h2>
+            <div class="row">
+                <div id="punishsDiv" class="col-12">
+
+                </div>
+            </div>
+            <!--
+            <br>
+            <hr>
+            <h2>Создание блога</h2>
+            <p class="lead">Блог можно создать.</p>
+            <div class="row">
+                <div id="blogsDiv" class="col-6">
+                    <form>
+                        <div class="form-group">
+                            <label for="createDiv">URL</label>
+                            <input id="createDiv" class="form-control" type="text" placeholder="URL" required>
+                        </div>
+                        <button onclick="CreateBlog();" type="submit" class='btn btn-dark'>Создать блог</button>
+                        <button onclick="location.reload();" type="button" class='btn btn-success'>Обновить страницу</button>
+                    </form>
+                </div>
+            </div>
+            -->
+        </div>
+        <!--End Main-->
+        <!--Footer-->
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+            <div class="row">
+                <div class="col-12 col-md">
+                    <small class="d-block mb-3 text-muted">Producted by KMA &copy; 2018</small>
+                </div>
+            </div>
+        </footer>
+        <!--End Footer-->
+
+
+<!--***********************************************************************************************************-->
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Авторизация</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Email</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Еmail">
+                                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Пароль</label>
+                                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Пароль">
+                            </div>
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Запомнить меня</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Вход</button>
+                        </form>
+                    </div>
+                    <!--<div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+        <!--End Modal-->
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true" onload="DetailPunishment(id);">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailModalLabel">О нарушении</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="detalsModal">
+                        <p>вывод подробностей о нарушении</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End Modal-->
+<!--************************************************************************************************************-->
+
+    </div> <!-- /container -->
+
+    <!--<script src="lib2/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="lib2/popper.min.js" crossorigin="anonymous"></script>
+    <script src="lib2/bootstrap.min.js" crossorigin="anonymous"></script>
+    -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+    <!--Мои скрипты-->
+    <script>
+
+        //получение списка нарушений(пока вообще всех), далее только штрафы зарегистрированного пользователя
+        function LoadPunishments() {
+
+            var request = new XMLHttpRequest();
+            request.open("GET", "http://localhost:13807/api/punishments", true);
+            request.send();
+
+            var x = "";
+
+            request.onreadystatechange = function () {
+                if (request.readyState != 4) return;
+
+                if (request.status != 200) {
+                    // обработать ошибку
+                    alert(request.status + ': ' + request.statusText);
+                } else {
+                    // вывести результат
+                    var myObj = JSON.parse(request.responseText/*result*/);
+
+                    for (var i in myObj) {
+                        var date = new Date(myObj[i].date);
+                        x += "<div class=\"max_shadow\">"
+                        x += "<h6> Нарушение № " + myObj[i].id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj[i].penalty + "</h6>";
+                        if (myObj[i].datePay != null) { x += "<p>Статус: оплачен</p>" }
+                        else { x += "<p>Статус: не оплачен</p>"; x += "<button type='button' style='margin-right:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj[i].id + ");'>Оплатить</button>" }
+                        x += "<a class='btn btn-sm btn-outline-secondary' href='#' data-toggle='modal' data-target='#detailModal' onclick='DetailPunishment(" + myObj[i].id +")'>Подробнее</a>"
+                        x += "</div>"
+                        document.getElementById("punishsDiv").innerHTML = x;
+                    }
+                }
+            }
+        }
+
+        //получение подробной информации об одном из нарушений
+        function DetailPunishment(id) {
+            var request = new XMLHttpRequest();
+            //select = document.getElementById("deleteDiv");
+            url = "http://localhost:13807/api/punishments/" + id;
+            request.open("GET", url, true);
+            request.send();
+
+            var x = "";
+
+            request.onreadystatechange = function () {
+                if (request.readyState != 4) return;
+
+                if (request.status != 200) {
+                    // обработать ошибку
+                    alert(request.status + ': ' + request.statusText);
+                }
+                else {
+                    // вывести результат
+                    var myObj = JSON.parse(request.responseText/*result*/);
+
+                        var date = new Date(myObj.date);
+                        x += "<h4> Нарушение № " + myObj.id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj.penalty + "</h4>";
+                        if (myObj.datePay != null) { x += "<p>Статус: оплачен</p>" }
+                        else
+                        {
+                            x += "<p>Статус: не оплачен</p>"
+                            x += "<button type='button' style='margin-left:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj.id + ");'>Оплатить</button>"
+                        }
+                        
+                        document.getElementById("detalsModal").innerHTML = x;
+                }
+
+            }
+        }
+
+        //function CreateBlog() {
+        //    urlText = document.getElementById("punishsDiv").value;
+        //    var request = new XMLHttpRequest();
+        //    request.open("PUT", "http://localhost:13807/api/punishments/");
+        //    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        //    request.send(JSON.stringify({ url: urlText }));
+        //}
+
+        function Payed(id) {
+            var currentDate = new Date();
+            urlText = document.getElementById("detailModal");
+            var request = new XMLHttpRequest();
+            request.open("PUT", "http://localhost:13807/api/punishments/" + id);
+            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            request.send(JSON.stringify({ datePay: currentDate }));
+        }
+
+    </script>
+</body>
+</html>

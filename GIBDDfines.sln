@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GIBDDfines", "GIBDDfines\GIBDDfines.csproj", "{3837596F-409A-4E46-A076-8A104AF81245}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3837596F-409A-4E46-A076-8A104AF81245}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3837596F-409A-4E46-A076-8A104AF81245}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3837596F-409A-4E46-A076-8A104AF81245}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3837596F-409A-4E46-A076-8A104AF81245}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D333A6C9-3CA3-4FEB-A26F-152F823B0718}
+	EndGlobalSection
+EndGlobal
