@@ -46,20 +46,20 @@ namespace GIBDDfines.Controllers
             return Ok(punishments);
         }
 
-        //изменение нарушения(
+        //изменение нарушения(псевдоПУТ запрос, реализован как ГЕТ)
         // PUT: api/Punishments/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPunishments([FromRoute] string id, [FromBody] Punishments punishments)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
+            punishments = await _context.Punishments.SingleOrDefaultAsync(m => m.Id == id);
 
             if (id != punishments.Id)
-            {
                 return BadRequest();
-            }
+
+            punishments.DatePay = DateTime.Now;
 
             _context.Entry(punishments).State = EntityState.Modified;
 
@@ -70,13 +70,9 @@ namespace GIBDDfines.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!PunishmentsExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();

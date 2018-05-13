@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using GIBDDfines.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 
 namespace GIBDDfines
 {
@@ -33,8 +34,13 @@ namespace GIBDDfines
 
 
             var connection = @"Server=DESKTOP-A3EOVHI;Database=modeldbGIBDD;Trusted_Connection=True;ConnectRetryCount=0";
+            //var connection = @"Server=DESKTOP-A3EOVHI;Database=usersstoredb;Trusted_Connection=True;MultipleActiveResultSets=true";
             services.AddDbContext<modeldbGIBDDContext>(options => options.UseSqlServer(connection).ConfigureWarnings(warnings => warnings.Throw(CoreEventId.IncludeIgnoredWarning)));
 
+
+            // добавление сервисов Idenity
+            /*services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<modeldbGIBDDContext>();*/
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -47,7 +53,9 @@ namespace GIBDDfines
 
             app.UseStaticFiles();
 
-            app.UseMvc();
+            //app.UseAuthentication();
+
+            app.UseMvc();           
         }
     }
 }

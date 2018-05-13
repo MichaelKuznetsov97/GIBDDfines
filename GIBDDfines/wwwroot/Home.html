@@ -12,59 +12,66 @@
     <!--<link rel="stylesheet" href="lib2/bootstrap.min.css">-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <!--<script src="lib2/bootstrap.min.js"></script>-->
-    <link href="css/style.css" rel="stylesheet" />
+    <link href="css/myStyle.css" rel="stylesheet" />
 </head>
 
-<body onload="LoadPunishments();">
+<body onload="LoadPunishments(0);">
     <div class="container">
 
         <!--Header-->
         <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
             <h5 class="my-0 mr-md-auto font-weight-normal">Штрафы ГИБДД</h5>
             <nav class="my-2 my-md-0 mr-md-3">
-                <a class="p-2 text-dark" href="#">Главная</a>
+                    <div class="btn-group">
+                            <button type="button" class="btn btn-default p-2 text-dark" href="home.html">Главная</button>
+                            <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="#" onclick="LoadPunishments(0);">Все штрафы</a>
+                              <a class="dropdown-item" href="#" onclick="LoadPunishments(1);">Только оплаченные</a>
+                              <a class="dropdown-item" href="#" onclick="LoadPunishments(2);">Только неоплаченные</a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="#">Штрафы за промежуток времени</a>
+                            </div>
+                          </div>
                 <a class="p-2 text-dark" href="#">Контакты</a>
                 <a class="p-2 text-dark" href="#">О приложении</a>
             </nav>
-            <a class="btn btn-outline" href="#" data-toggle="modal" data-target="#exampleModal">Войти</a>
+            <a class="btn btn-outline" href="#" data-toggle="modal" data-target="#autorizModal">Войти</a>
         </div>
         <!--End Header-->
+
         <!--Main-->
         <div>
-            <!--
-                <h1>Bootstrap</h1>
-                <p class="lead">Пример использования стилей и JS библиотеки Bootstrap</p>
-                <p><a href="https://getbootstrap.com/docs/4.1/getting-started/introduction/">Сам Bootstrap</a></p>
-                <p><a href="https://getbootstrap.com/docs/4.1/components/buttons/"> Компоненты</a></p>
-            -->
             <br>
             <!--<hr>-->
             <h2>Список штрафов</h2>
             <div class="row">
-                <div id="punishsDiv" class="col-12">
-
-                </div>
+                <div id="punishsDiv" class="col-12"><!--сюда добавляются нарушения через js--></div>
             </div>
-            <!--
-            <br>
-            <hr>
-            <h2>Создание блога</h2>
-            <p class="lead">Блог можно создать.</p>
-            <div class="row">
-                <div id="blogsDiv" class="col-6">
-                    <form>
-                        <div class="form-group">
-                            <label for="createDiv">URL</label>
-                            <input id="createDiv" class="form-control" type="text" placeholder="URL" required>
-                        </div>
-                        <button onclick="CreateBlog();" type="submit" class='btn btn-dark'>Создать блог</button>
-                        <button onclick="location.reload();" type="button" class='btn btn-success'>Обновить страницу</button>
-                    </form>
-                </div>
+            
+        <!--
+        <br>
+        <hr>
+        <h2>Создание блога</h2>
+        <p class="lead">Блог можно создать.</p>
+        <div class="row">
+            <div id="blogsDiv" class="col-6">
+                <form>
+                    <div class="form-group">
+                        <label for="createDiv">URL</label>
+                        <input id="createDiv" class="form-control" type="text" placeholder="URL" required>
+                    </div>
+                    <button onclick="CreateBlog();" type="submit" class='btn btn-dark'>Создать блог</button>
+                    <button onclick="location.reload();" type="button" class='btn btn-success'>Обновить страницу</button>
+                </form>
             </div>
-            -->
+        </div>
+        -->
         </div>
         <!--End Main-->
+
         <!--Footer-->
         <footer class="pt-4 my-md-5 pt-md-5 border-top">
             <div class="row">
@@ -75,14 +82,13 @@
         </footer>
         <!--End Footer-->
 
-
-<!--***********************************************************************************************************-->
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <!--***********************************************************************************************************-->
+        <!-- Modal window autorization-->
+        <div class="modal fade" id="autorizModal" tabindex="-1" role="dialog" aria-labelledby="autorizModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Авторизация</h5>
+                        <h5 class="modal-title" id="autorizModalLabel">Авторизация</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -90,31 +96,32 @@
                     <div class="modal-body">
                         <form>
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Email</label>
-                                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Еmail">
+                                <label for="autorizInputEmail1">Email</label>
+                                <input type="email" class="form-control" id="autorizInputEmail1" aria-describedby="emailHelp" placeholder="Еmail">
                                 <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                             </div>
                             <div class="form-group">
-                                <label for="exampleInputPassword1">Пароль</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Пароль">
+                                <label for="autorizInputPassword1">Пароль</label>
+                                <input type="password" class="form-control" id="autorizInputPassword1" placeholder="Пароль">
                             </div>
                             <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                <label class="form-check-label" for="exampleCheck1">Запомнить меня</label>
+                                <input type="checkbox" class="form-check-input" id="autorizCheck1">
+                                <label class="form-check-label" for="autorizCheck1">Запомнить меня</label>
                             </div>
                             <button type="submit" class="btn btn-primary">Вход</button>
+
+                            <p>Нет учетной записи? <a href="Register.html">Зарегистрируйся</a></p>
                         </form>
                     </div>
                     <!--<div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>-->
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>-->
                 </div>
             </div>
         </div>
-        <!--End Modal-->
+        <!--End Modal window autorization-->
 
-
-        <!-- Modal -->
+        <!-- Modal details-->
         <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true" onload="DetailPunishment(id);">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -130,15 +137,11 @@
                 </div>
             </div>
         </div>
-        <!--End Modal-->
-<!--************************************************************************************************************-->
+        <!--End Modal details-->
+        <!--************************************************************************************************************-->
 
     </div> <!-- /container -->
 
-    <!--<script src="lib2/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
-    <script src="lib2/popper.min.js" crossorigin="anonymous"></script>
-    <script src="lib2/bootstrap.min.js" crossorigin="anonymous"></script>
-    -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
@@ -147,8 +150,8 @@
     <!--Мои скрипты-->
     <script>
 
-        //получение списка нарушений(пока вообще всех), далее только штрафы зарегистрированного пользователя
-        function LoadPunishments() {
+        //получение списка нарушений(в зависимости от семафора выбираются разные нарушения), далее только штрафы зарегистрированного пользователя
+        function LoadPunishments(semafor) {
 
             var request = new XMLHttpRequest();
             request.open("GET", "http://localhost:13807/api/punishments", true);
@@ -167,18 +170,22 @@
                     var myObj = JSON.parse(request.responseText/*result*/);
 
                     for (var i in myObj) {
-                        var date = new Date(myObj[i].date);
-                        x += "<div class=\"max_shadow\">"
-                        x += "<h6> Нарушение № " + myObj[i].id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj[i].penalty + "</h6>";
-                        if (myObj[i].datePay != null) { x += "<p>Статус: оплачен</p>" }
-                        else { x += "<p>Статус: не оплачен</p>"; x += "<button type='button' style='margin-right:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj[i].id + ");'>Оплатить</button>" }
-                        x += "<a class='btn btn-sm btn-outline-secondary' href='#' data-toggle='modal' data-target='#detailModal' onclick='DetailPunishment(" + myObj[i].id +")'>Подробнее</a>"
-                        x += "</div>"
-                        document.getElementById("punishsDiv").innerHTML = x;
+                        if((semafor==1 && myObj[i].datePay!=null) || (semafor==2 && myObj[i].datePay==null) || (semafor!=1 && semafor!=2)) {
+                            var date = new Date(myObj[i].date);
+                            x += "<div class='max_shadow'>"
+                            x += "<button type='button' onclick='Delete(" + myObj[i].id + ");' class='close'><img width='30px' src='images/delete_pict.png'></img></button>"
+                            x += "<h6> Нарушение № " + myObj[i].id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj[i].penalty + "</h6>";
+                            if (myObj[i].datePay != null) { x += "<p>Статус: оплачен</p>" }
+                            else { x += "<p>Статус: не оплачен</p>"; x += "<button type='button' style='margin-right:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj[i].id + ");'>Оплатить</button>" }
+                            x += "<a class='btn btn-sm btn-outline-secondary' href='#' data-toggle='modal' data-target='#detailModal' onclick='DetailPunishment(" + myObj[i].id +")'>Подробнее</a>"
+                            x += "</div>"
+                            document.getElementById("punishsDiv").innerHTML = x;
+                        }
                     }
                 }
             }
         }
+
 
         //получение подробной информации об одном из нарушений
         function DetailPunishment(id) {
@@ -216,6 +223,7 @@
             }
         }
 
+        //добавление записи о нарушении в бд (сомнительная функция, т.к. добавление я хотел осуществлять через десктопное приложение)
         //function CreateBlog() {
         //    urlText = document.getElementById("punishsDiv").value;
         //    var request = new XMLHttpRequest();
@@ -224,13 +232,22 @@
         //    request.send(JSON.stringify({ url: urlText }));
         //}
 
+        //изменение статуса нарушения (некоторая проблема в том, что страница перезагружается)
         function Payed(id) {
             var currentDate = new Date();
-            urlText = document.getElementById("detailModal");
             var request = new XMLHttpRequest();
             request.open("PUT", "http://localhost:13807/api/punishments/" + id);
             request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             request.send(JSON.stringify({ datePay: currentDate }));
+            window.location.reload();
+        }
+
+        //удаление записи о нарушении (будет доступно только в админке и то, не уверен, что это вообще нужно)
+        function Delete(id) {
+            var request = new XMLHttpRequest();
+            request.open("DELETE", "http://localhost:13807/api/punishments/"+ id);
+            request.send();
+            window.location.reload();
         }
 
     </script>
