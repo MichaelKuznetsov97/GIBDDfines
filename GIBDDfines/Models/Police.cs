@@ -11,9 +11,9 @@ namespace GIBDDfines.Models
         }
 
         public string Id { get; set; }
-        public string Name { get; set; }
         public int IdTitle { get; set; }
         public string Login { get; set; }
+        public string Name { get; set; }
         public string Password { get; set; }
 
         public Titles IdTitleNavigation { get; set; }

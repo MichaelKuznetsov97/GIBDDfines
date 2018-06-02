@@ -11,14 +11,14 @@ namespace GIBDDfines.Models
         }
 
         public int Id { get; set; }
+        public DateTime? DateRelease { get; set; }
+        public int IdColor { get; set; }
+        public int IdMarkModel { get; set; }
+        public int IdOwner { get; set; }
+        public int IdTcateg { get; set; }
+        public int IdType { get; set; }
         public string Number { get; set; }
         public int? Pengine { get; set; }
-        public DateTime? DateRelease { get; set; }
-        public int IdMarkModel { get; set; }
-        public int IdColor { get; set; }
-        public int IdType { get; set; }
-        public int IdTcateg { get; set; }
-        public int IdOwner { get; set; }
 
         public Colors IdColorNavigation { get; set; }
         public Models IdMarkModelNavigation { get; set; }

@@ -12,8 +12,8 @@ namespace GIBDDfines.Models
         }
 
         public int Id { get; set; }
-        public string Name { get; set; }
         public string Describe { get; set; }
+        public string Name { get; set; }
 
         public ICollection<Autoes> Autoes { get; set; }
         public ICollection<LinkOwnCateg> LinkOwnCateg { get; set; }

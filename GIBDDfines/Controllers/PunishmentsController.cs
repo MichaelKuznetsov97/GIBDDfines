@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GIBDDfines.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GIBDDfines.Controllers
 {
@@ -13,9 +14,9 @@ namespace GIBDDfines.Controllers
     [Route("api/Punishments")]
     public class PunishmentsController : Controller
     {
-        private readonly modeldbGIBDDContext _context;
+        private readonly modeldbGIBDD2Context _context;
 
-        public PunishmentsController(modeldbGIBDDContext context)
+        public PunishmentsController(modeldbGIBDD2Context context)
         {
             _context = context;
         }
@@ -25,6 +26,44 @@ namespace GIBDDfines.Controllers
         public IEnumerable<Punishments> GetPunishments()
         {
             return _context.Punishments;
+        }
+
+        // GET: api/Punishmentsenter/semafor
+        [Route("~/api/punishmentsenter/{semafor}")]
+        [HttpGet("{semafor}")]
+        public async Task<IActionResult> GetPunishmentsenter([FromRoute] int semafor)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            List<Punishments> punishments = new List<Punishments>();
+            if(_context.Punishments != null) { 
+            if (semafor == 1)
+                foreach(var temp in _context.Punishments)
+                    if(temp.DatePay != null)
+                        punishments.Add(temp);
+
+            if (semafor == 2)
+                foreach (var temp in _context.Punishments)
+                    if(temp.DatePay == null)
+                        punishments.Add(temp);
+
+            if (semafor != 1 && semafor != 2)
+                foreach (var temp in _context.Punishments)
+                    punishments.Add(temp);
+            }
+            if (punishments == null)
+            {
+                return NotFound();
+            }
+            /*if (punishments.Count == 0)
+            {
+                return Ok(null);
+            }*/
+
+            return Ok(punishments);
         }
 
         // GET: api/Punishments/5
@@ -108,8 +147,10 @@ namespace GIBDDfines.Controllers
             return CreatedAtAction("GetPunishments", new { id = punishments.Id }, punishments);
         }
 
+        //удаление записи
         // DELETE: api/Punishments/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeletePunishments([FromRoute] string id)
         {
             if (!ModelState.IsValid)

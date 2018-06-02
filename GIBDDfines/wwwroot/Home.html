@@ -38,7 +38,12 @@
                 <a class="p-2 text-dark" href="#">Контакты</a>
                 <a class="p-2 text-dark" href="#">О приложении</a>
             </nav>
-            <a class="btn btn-outline" href="#" data-toggle="modal" data-target="#autorizModal">Войти</a>
+            <div>
+                <p id="Message"></p>
+                <div id="loginButton">
+                    <a class="btn btn-outline" href="#" data-toggle="modal" data-target="#autorizModal">Войти</a>
+                </div>    
+            </div>
         </div>
         <!--End Header-->
 
@@ -94,7 +99,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form>
+                        <!--<form>
                             <div class="form-group">
                                 <label for="autorizInputEmail1">Email</label>
                                 <input type="email" class="form-control" id="autorizInputEmail1" aria-describedby="emailHelp" placeholder="Еmail">
@@ -111,7 +116,27 @@
                             <button type="submit" class="btn btn-primary">Вход</button>
 
                             <p>Нет учетной записи? <a href="Register.html">Зарегистрируйся</a></p>
+                        </form>-->
+                        <form>
+
+                                <div class="msgClass">
+                                        <div id="msgAuth"></div>
+                                        <div id="msg"></div>
+                                        <ul id="formError"></ul>
+                                </div>
+                                
+                                <div>
+                                <label for="">Email: </label><br />
+                                <input type="text" id="Email" name="Email">
+                                </div>
+                                <div>
+                                <label for="">Пароль: </label><br />
+                                <input type="password" id="Password" name="Password">
+                                </div>
                         </form>
+                        <button type="submit" id="loginBtn" class="btn btn-primary" onclick="ParseResponseMsg();">Вход</button>
+
+                        <p>Нет учетной записи? <a href="Register.html">Зарегистрируйся</a></p>
                     </div>
                     <!--<div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -150,11 +175,83 @@
     <!--Мои скрипты-->
     <script>
 
-        //получение списка нарушений(в зависимости от семафора выбираются разные нарушения), далее только штрафы зарегистрированного пользователя
-        function LoadPunishments(semafor) {
+        function GetCurrentUser() {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("POST", "http://localhost:13807/api/Account/isAuthenticated", true);
+            xmlhttp.onreadystatechange = function () {
+                var myObj = "";
+                myObj = xmlhttp.responseText != "" ? JSON.parse(xmlhttp.responseText) : {}; 
+                document.getElementById("Message").innerHTML = myObj.message;
 
+                if(myObj.guest)
+                    document.getElementById("loginButton").innerHTML="<a class='btn btn-outline' href='#' data-toggle='modal' data-target='#autorizModal'>Войти</a>";
+                else
+                    document.getElementById("loginButton").innerHTML="<button class='btn btn-outline' onclick='LogOff();'>Выйти</button>";
+            }
+            xmlhttp.send();
+        }
+
+        function LogOff()
+        {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("POST", "http://localhost:13807/api/Account/LogOff", true);
+            xmlhttp.send();
+
+            GetCurrentUser();
+        }
+
+        function ParseResponseMsg() {
+            // Считывание данных с формы
+            email = document.getElementById("Email").value;
+            password = document.getElementById("Password").value;
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("POST", "http://localhost:13807/api/Account/Login");
+
+            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+            xmlhttp.onreadystatechange = function () {
+                // Очистка контейнера вывода сообщений
+                document.getElementById("msg").innerHTML = ""
+                var mydiv = document.getElementById('formError');
+                while (mydiv.firstChild) {
+                    mydiv.removeChild(mydiv.firstChild);
+                }
+                // Обработка ответа от сервера
+                myObj = JSON.parse(this.responseText);
+                document.getElementById("msg").innerHTML = myObj.message;
+                // Вывод сообщений об ошибках
+                if (typeof myObj.error !== "undefined" && myObj.error.length > 0) {
+                    for (var i = 0; i < myObj.error.length; i++) {
+                        var ul = document.getElementsByTagName("ul");
+                        var li = document.createElement("li");
+                        li.appendChild(document.createTextNode(myObj.error[i]));
+                        ul[0].appendChild(li);
+                    }
+                }
+                document.getElementById("Password").value = "";
+            };
+
+            // Запрос на сервер
+            xmlhttp.send(JSON.stringify({
+            email: email,
+            password: password
+            }));
+
+            //window.location.reload();
+            GetCurrentUser();
+        };
+        
+        // Обработка клика по кнопке
+        document.getElementById("loginBtn").addEventListener("click", ParseResponseMsg);
+
+
+        //получение списка нарушений(в зависимости от семафора выбираются разные нарушения), далее только штрафы зарегистрированного пользователя
+        function LoadPunishments(semafor/*для обработки запроса на сервере*/) {
+
+            GetCurrentUser();
+            
             var request = new XMLHttpRequest();
-            request.open("GET", "http://localhost:13807/api/punishments", true);
+            request.open("GET", "http://localhost:13807/api/punishmentsenter/" + semafor, true);
             request.send();
 
             var x = "";
@@ -169,17 +266,18 @@
                     // вывести результат
                     var myObj = JSON.parse(request.responseText/*result*/);
 
-                    for (var i in myObj) {
-                        if((semafor==1 && myObj[i].datePay!=null) || (semafor==2 && myObj[i].datePay==null) || (semafor!=1 && semafor!=2)) {
-                            var date = new Date(myObj[i].date);
-                            x += "<div class='max_shadow'>"
-                            x += "<button type='button' onclick='Delete(" + myObj[i].id + ");' class='close'><img width='30px' src='images/delete_pict.png'></img></button>"
-                            x += "<h6> Нарушение № " + myObj[i].id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj[i].penalty + "</h6>";
-                            if (myObj[i].datePay != null) { x += "<p>Статус: оплачен</p>" }
-                            else { x += "<p>Статус: не оплачен</p>"; x += "<button type='button' style='margin-right:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj[i].id + ");'>Оплатить</button>" }
-                            x += "<a class='btn btn-sm btn-outline-secondary' href='#' data-toggle='modal' data-target='#detailModal' onclick='DetailPunishment(" + myObj[i].id +")'>Подробнее</a>"
-                            x += "</div>"
-                            document.getElementById("punishsDiv").innerHTML = x;
+                    if(myObj.length == 0) {x += "<p>Нарушений не найдено</p>"; document.getElementById("punishsDiv").innerHTML = x;}
+                    else {
+                        for (var i in myObj) {
+                                var date = new Date(myObj[i].date);
+                                x += "<div class='max_shadow'>"
+                                x += "<button type='button' onclick='Delete(" + myObj[i].id + ");' class='close'><img width='30px' src='images/delete_pict.png'></img></button>"
+                                x += "<h6> Нарушение № " + myObj[i].id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj[i].penalty + "</h6>";
+                                if (myObj[i].datePay != null) { x += "<p>Статус: оплачен</p>" }
+                                else { x += "<p>Статус: не оплачен</p>"; x += "<button type='button' style='margin-right:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj[i].id + ");'>Оплатить</button>" }
+                                x += "<a class='btn btn-sm btn-outline-secondary' href='#' data-toggle='modal' data-target='#detailModal' onclick='DetailPunishment(" + myObj[i].id +")'>Подробнее</a>"
+                                x += "</div>"
+                                document.getElementById("punishsDiv").innerHTML = x;
                         }
                     }
                 }
@@ -238,8 +336,8 @@
             var request = new XMLHttpRequest();
             request.open("PUT", "http://localhost:13807/api/punishments/" + id);
             request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            request.send(JSON.stringify({ datePay: currentDate }));
-            window.location.reload();
+            request.send(JSON.stringify({ datePay: currentDate }));                     
+           // window.location.reload();
         }
 
         //удаление записи о нарушении (будет доступно только в админке и то, не уверен, что это вообще нужно)

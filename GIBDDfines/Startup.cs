@@ -33,14 +33,24 @@ namespace GIBDDfines
                     options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
 
-            var connection = @"Server=DESKTOP-A3EOVHI;Database=modeldbGIBDD;Trusted_Connection=True;ConnectRetryCount=0";
+            var connection = @"Server=DESKTOP-A3EOVHI;Database=modeldbGIBDD2;Trusted_Connection=True;"; /*ConnectRetryCount=0*/
             //var connection = @"Server=DESKTOP-A3EOVHI;Database=usersstoredb;Trusted_Connection=True;MultipleActiveResultSets=true";
-            services.AddDbContext<modeldbGIBDDContext>(options => options.UseSqlServer(connection).ConfigureWarnings(warnings => warnings.Throw(CoreEventId.IncludeIgnoredWarning)));
+            services.AddDbContext<modeldbGIBDD2Context>(options => options.UseSqlServer(connection).ConfigureWarnings(warnings => warnings.Throw(CoreEventId.IncludeIgnoredWarning)));
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.Name = ".AspNetCore.Identity.Application";
+                options.LoginPath = "/";
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                };
+            });
 
             // добавление сервисов Idenity
-            /*services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<modeldbGIBDDContext>();*/
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<modeldbGIBDD2Context>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -53,7 +63,7 @@ namespace GIBDDfines
 
             app.UseStaticFiles();
 
-            //app.UseAuthentication();
+            app.UseAuthentication();
 
             app.UseMvc();           
         }

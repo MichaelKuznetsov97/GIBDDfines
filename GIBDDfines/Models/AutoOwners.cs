@@ -13,10 +13,10 @@ namespace GIBDDfines.Models
         }
 
         public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime DateEntered { get; set; }
         public DateTime? DateConfisc { get; set; }
+        public DateTime DateEntered { get; set; }
         public DateTime? DateReturn { get; set; }
+        public string Name { get; set; }
         public string Number { get; set; }
 
         public ICollection<Autoes> Autoes { get; set; }

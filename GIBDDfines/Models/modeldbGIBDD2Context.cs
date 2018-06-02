@@ -5,10 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace GIBDDfines.Models
 {
-    public partial class modeldbGIBDDContext : DbContext
+    public partial class modeldbGIBDD2Context : IdentityDbContext<User>
     {
-        public modeldbGIBDDContext(DbContextOptions<modeldbGIBDDContext> options)
-            : base(options)
+        public modeldbGIBDD2Context(DbContextOptions<modeldbGIBDD2Context> options) : base(options)
         { }
 
         public virtual DbSet<Autoes> Autoes { get; set; }
@@ -22,10 +21,20 @@ namespace GIBDDfines.Models
         public virtual DbSet<Titles> Titles { get; set; }
         public virtual DbSet<Tscategories> Tscategories { get; set; }
         public virtual DbSet<TypePunishments> TypePunishments { get; set; }
-        public virtual DbSet<TypeTs> TypeTs { get; set; }        
+        public virtual DbSet<TypeTs> TypeTs { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(@"Server=DESKTOP-A3EOVHI;Database=modeldbGIBDD2;Trusted_Connection=True;");
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Autoes>(entity =>
             {
                 entity.HasIndex(e => e.IdColor)
@@ -227,6 +236,8 @@ namespace GIBDDfines.Models
 
             modelBuilder.Entity<Punishments>(entity =>
             {
+                entity.HasIndex(e => e.IdAowner);
+
                 entity.HasIndex(e => e.IdAuto)
                     .HasName("IX_FK_Punishment_Auto");
 
