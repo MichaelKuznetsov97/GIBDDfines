@@ -72,7 +72,7 @@ namespace GIBDDfines
             string adminPassword = "Root1!";
             if (await userManager.FindByNameAsync(adminEmail) == null)
             {
-                User admin = new User { Email = adminEmail, UserName = adminEmail };
+                User admin = new User { Email = adminEmail, UserName =  adminEmail, nameSurname = "Администратор" };
                 IdentityResult result = await userManager.CreateAsync(admin, adminPassword);
                 if (result.Succeeded)
                 {
