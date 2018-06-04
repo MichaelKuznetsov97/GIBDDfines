@@ -201,8 +201,11 @@
             xmlhttp.onreadystatechange = function () {
                 document.getElementById("Message").innerHTML = "Вы гость."
                 document.getElementById("loginButton").innerHTML="<a class='btn btn-outline' href='#' data-toggle='modal' data-target='#autorizModal'>Войти</a>";
+                LoadPunishments(0);
             }
             xmlhttp.send();
+
+            
         }
 
         // Обработка клика по кнопке
@@ -256,37 +259,40 @@
 
         //получение списка нарушений(в зависимости от семафора выбираются разные нарушения), далее только штрафы зарегистрированного пользователя
         function LoadPunishments(semafor/*для обработки запроса на сервере*/) {
-
             GetCurrentUser();
-            
+
             var request = new XMLHttpRequest();
             request.open("GET", "http://localhost:13807/api/punishmentsenter/" + semafor, true);
             request.send();
 
-            var x = "";
+            document.getElementById("punishsDiv").innerHTML = "<p>Авторизуйтесь, чтобы просмотреть штрафы</p>";
 
             request.onreadystatechange = function () {
-                if (request.readyState != 4) return;
 
-                if (request.status != 200) {
-                    // обработать ошибку
-                    alert(request.status + ': ' + request.statusText);
-                } else {
-                    // вывести результат
-                    var myObj = JSON.parse(request.responseText/*result*/);
+                if(request.status == 404) document.getElementById("punishsDiv").innerHTML = "<p>Авторизуйтесь, чтобы просмотреть штрафы</p>";
+                else {
+                    if (request.readyState != 4) return;
 
-                    if(myObj.length == 0) {x += "<p>Нарушений не найдено</p>"; document.getElementById("punishsDiv").innerHTML = x;}
-                    else {
-                        for (var i in myObj) {
-                                var date = new Date(myObj[i].date);
-                                x += "<div class='max_shadow'>"
-                                x += "<button type='button' onclick='Delete(" + myObj[i].id + ");' class='close'><img width='30px' src='images/delete_pict.png'></img></button>"
-                                x += "<h6> Нарушение № " + myObj[i].id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj[i].penalty + "</h6>";
-                                if (myObj[i].datePay != null) { x += "<p>Статус: оплачен</p>" }
-                                else { x += "<p>Статус: не оплачен</p>"; x += "<button type='button' style='margin-right:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj[i].id + ");'>Оплатить</button>" }
-                                x += "<a class='btn btn-sm btn-outline-secondary' href='#' data-toggle='modal' data-target='#detailModal' onclick='DetailPunishment(" + myObj[i].id +")'>Подробнее</a>"
-                                x += "</div>"
-                                document.getElementById("punishsDiv").innerHTML = x;
+                    if (request.status != 200) {
+                        // обработать ошибку
+                        alert(request.status + ': ' + request.statusText);
+                    } else {
+                        // вывести результат
+                        var myObj = JSON.parse(request.responseText/*result*/);
+                        var x = "";
+                        if(myObj.length == 0) {x += "<p>Нарушений не найдено</p>"; document.getElementById("punishsDiv").innerHTML = x;}
+                        else {
+                            for (var i in myObj) {
+                                    var date = new Date(myObj[i].date);
+                                    x += "<div class='max_shadow'>"
+                                    x += "<button type='button' onclick='Delete(" + myObj[i].id + ");' class='close'><img width='30px' src='images/delete_pict.png'></img></button>"
+                                    x += "<h6> Нарушение № " + myObj[i].id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj[i].penalty + "</h6>";
+                                    if (myObj[i].datePay != null) { x += "<p>Статус: оплачен</p>" }
+                                    else { x += "<p>Статус: не оплачен</p>"; x += "<button type='button' style='margin-right:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj[i].id + ");'>Оплатить</button>" }
+                                    x += "<a class='btn btn-sm btn-outline-secondary' href='#' data-toggle='modal' data-target='#detailModal' onclick='DetailPunishment(" + myObj[i].id +")'>Подробнее</a>"
+                                    x += "</div>"
+                                    document.getElementById("punishsDiv").innerHTML = x;
+                            }
                         }
                     }
                 }

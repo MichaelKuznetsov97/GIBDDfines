@@ -17,20 +17,35 @@ namespace GIBDDfines.Controllers
 
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly modeldbGIBDD2Context _context;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, modeldbGIBDD2Context context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         [HttpPost]
         [Route("api/Account/Register")]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            bool flag = false;
+            _context.AutoOwners.Load();
+            foreach (var t in _context.AutoOwners)
             {
-                User user = new User { Email = model.Email, UserName = model.Email, nameSurname = model.UserName };
+                if (t.Number == model.Number) { flag = true; break; }
+            }
+
+            foreach(var t in _userManager.Users)
+            {
+                if(t.Number == model.Number) { flag = false; break; }
+            }
+
+            if (ModelState.IsValid && flag)
+            {
+
+                User user = new User { Email = model.Email, UserName = model.Email, nameSurname = model.UserName, Number = model.Number };
                 // Добавление нового пользователя
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -62,7 +77,7 @@ namespace GIBDDfines.Controllers
             {
                 var errorMsg = new
                 {
-                    message = "Неверные входные данные.",
+                    message = "Неверные входные данные. Возможно введен неверный номер ВУ или пользователь с таким ВУ уже существует",
                     error = ModelState.Values.SelectMany(e => e.Errors.Select(er =>
                     er.ErrorMessage))
                 };
@@ -79,12 +94,12 @@ namespace GIBDDfines.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-                //User user = await GetCurrentUserAsync();
+                User user = await _userManager.FindByEmailAsync(model.Email);
                 if (result.Succeeded)
-                {
+                {  
                     var msg = new
                     {
-                        message = "Выполнен вход пользователем: " + model.Email,
+                        message = "Выполнен вход пользователем: " + user.nameSurname,
                         message1 = "Вы вошли как: "+ model.Email,
                         enter = true
                     };
@@ -138,7 +153,7 @@ namespace GIBDDfines.Controllers
         {
             User usr = await GetCurrentUserAsync();
 
-            var message = usr == null ? "Вы Гость." : "Вы вошли как: " + usr.UserName;
+            var message = usr == null ? "Вы Гость." : "Вы вошли как: " + usr.nameSurname;
             bool guest = usr == null ? true : false;
             var msg = new
             {

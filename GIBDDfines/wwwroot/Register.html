@@ -61,6 +61,11 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="Number">Серия/номер ВУ</label>
+                        <input class="form-control" id="Number" placeholder="Введите серию и номер ВУ">
+                    </div>
+
+                    <div class="form-group">
                         <label for="Email">Email</label>
                         <input type="email" class="form-control" id="Email" aria-describedby="emailHelp" name="Email" placeholder="Еmail">
                         <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
@@ -107,7 +112,8 @@
             // Считывание данных с формы
             email = document.getElementById("Email").value;
             password = document.getElementById("Password").value;
-            var userName = document.getElementById("Name").value + " " + document.getElementById("Surname").value;
+            number = document.getElementById("Number").value;
+            userName = document.getElementById("Name").value + " " + document.getElementById("Surname").value;
 
             passwordConfirm = document.getElementById("PasswordConfirm").value;
             var xmlhttp = new XMLHttpRequest();
@@ -144,7 +150,8 @@
                 email: email,
                 password: password,
                 passwordConfirm: passwordConfirm,
-                userName: userName
+                userName: userName,
+                number: number
             }));
         };
 

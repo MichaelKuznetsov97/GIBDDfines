@@ -31,7 +31,8 @@ namespace GIBDDfines.Controllers
         // GET: api/Punishmentsenter/semafor
         [Route("~/api/punishmentsenter/{semafor}")]
         [HttpGet("{semafor}")]
-        public async Task<IActionResult> GetPunishmentsenter([FromRoute] int semafor)
+        [Authorize]
+        public IActionResult GetPunishmentsenter([FromRoute] int semafor)
         {
             if (!ModelState.IsValid)
             {

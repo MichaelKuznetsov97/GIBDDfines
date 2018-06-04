@@ -24,5 +24,9 @@ namespace GIBDDfines
         [Required]
         [Display(Name = "Имя")]
         public string UserName { get; set; }
+
+        [Required]
+        [Display(Name = "Номер ВУ")]
+        public string Number { get; set; }
     }
 }
