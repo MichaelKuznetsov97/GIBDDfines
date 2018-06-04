@@ -24,7 +24,6 @@
                 <a class="p-2 text-dark" href="#">Контакты</a>
                 <a class="p-2 text-dark" href="#">О приложении</a>
             </nav>
-            <a class="btn btn-outline" href="#" data-toggle="modal" data-target="#autorizModal">Войти</a>
         </div>
         <!--End Header-->
 
@@ -43,21 +42,7 @@
                         <label for="registerInputSurname">Фамилия</label>
                         <input class="form-control" id="registerInputSurname" placeholder="Введите фамилию">
                     </div>
-                    <div class="form-group">
-                        <label for="registerInputEmail">Email</label>
-                        <input type="email" class="form-control" id="registerInputEmail" aria-describedby="emailHelp" placeholder="Еmail">
-                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerInputPassword">Пароль</label>
-                        <input type="password" class="form-control" id="registerInputPassword" placeholder="Пароль">
-                    </div>
-                    <div class="form-group">
-                        <label for="registerRepeatPassword">Повторить пароль</label>
-                        <input type="password" class="form-control" id="registerRepeatPassword" placeholder="Повторить пароль">
-                    </div>
-                    <button type="submit" onclick="Register();" class="btn btn-primary">Зарегистрироваться</button>
-                </form>
+
             </div>-->
 
             <form>
@@ -65,20 +50,32 @@
                     <div id="msg"></div>
                     <ul id="formError"></ul>
                     </div>
-                    <div>
-                    <label for="">Email: </label><br />
-                    <input type="text" id="Email" name="Email">
+
+                    <div class="form-group">
+                        <label for="Name">Имя</label>
+                        <input class="form-control" id="Name" placeholder="Введите имя">
                     </div>
-                    <div>
-                    <label for="">Пароль: </label><br />
-                    <input type="password" id="Password" name="Password">
+                    <div class="form-group">
+                        <label for="Surname">Фамилия</label>
+                        <input class="form-control" id="Surname" placeholder="Введите фамилию">
                     </div>
-                    <div>
-                    <label for="">Подтверждение пароля: </label><br />
-                    <input type="password" id="PasswordConfirm" name="PasswordConfirm">
+
+                    <div class="form-group">
+                        <label for="Email">Email</label>
+                        <input type="email" class="form-control" id="Email" aria-describedby="emailHelp" name="Email" placeholder="Еmail">
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="Password">Пароль: </label>
+                        <input type="password" class="form-control" id="Password" name="Password" placeholder="Пароль">
+                    </div>
+                    <div class="form-group">
+                        <label for="PasswordConfirm">Подтверждение пароля: </label>
+                        <input type="password" class="form-control" id="PasswordConfirm" name="PasswordConfirm" placeholder="Повторить пароль">
                     </div>
                     </form>
-                    <button id="registerBtn">Регистрация</button>
+                    <button type="submit" id="registerBtn" class="btn btn-primary">Зарегистрироваться</button>
+                    
 
         </div>
         <!--End Main-->
@@ -103,10 +100,15 @@
     <!--Мои скрипты-->
     <script>
 
-        function ParseResponseMsg() {
+        // Обработка клика по кнопке
+        document.getElementById("registerBtn").addEventListener("click", Register);
+        //Функция обработчика
+        function Register() {
             // Считывание данных с формы
             email = document.getElementById("Email").value;
             password = document.getElementById("Password").value;
+            var userName = document.getElementById("Name").value + " " + document.getElementById("Surname").value;
+
             passwordConfirm = document.getElementById("PasswordConfirm").value;
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.open("POST", "http://localhost:13807/api/account/register");
@@ -141,12 +143,11 @@
             xmlhttp.send(JSON.stringify({
                 email: email,
                 password: password,
-                passwordConfirm: passwordConfirm
+                passwordConfirm: passwordConfirm,
+                userName: userName
             }));
         };
 
-            // Обработка клика по кнопке
-            document.getElementById("registerBtn").addEventListener("click", ParseResponseMsg);
     </script>
 </body>
 </html>

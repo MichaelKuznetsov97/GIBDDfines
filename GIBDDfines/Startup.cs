@@ -53,7 +53,35 @@ namespace GIBDDfines
                 .AddEntityFrameworkStores<modeldbGIBDD2Context>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        private async Task CreateUserRoles(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            // Создание ролей администратора и пользователя
+            if (await roleManager.FindByNameAsync("admin") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("admin"));
+            }
+            if (await roleManager.FindByNameAsync("user") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("user"));
+            }
+
+            // Создание администратора //его нельзя зарегистрировать программно
+            string adminEmail = "root";
+            string adminPassword = "Root1!";
+            if (await userManager.FindByNameAsync(adminEmail) == null)
+            {
+                User admin = new User { Email = adminEmail, UserName = adminEmail };
+                IdentityResult result = await userManager.CreateAsync(admin, adminPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, "admin");
+                }
+            }
+        }
+
+            public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider services)
         {
             app.UseCors(builder =>
                 builder.AllowAnyOrigin()
@@ -65,7 +93,9 @@ namespace GIBDDfines
 
             app.UseAuthentication();
 
-            app.UseMvc();           
+            app.UseMvc();
+
+            CreateUserRoles(services).Wait();
         }
     }
 }

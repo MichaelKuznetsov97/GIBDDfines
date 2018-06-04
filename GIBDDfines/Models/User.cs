@@ -8,5 +8,6 @@ namespace GIBDDfines.Models
 {
     public class User : IdentityUser
     {
+        public string nameSurname { get; set; }
     }
 }

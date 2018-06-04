@@ -150,7 +150,7 @@ namespace GIBDDfines.Controllers
         //удаление записи
         // DELETE: api/Punishments/5
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeletePunishments([FromRoute] string id)
         {
             if (!ModelState.IsValid)

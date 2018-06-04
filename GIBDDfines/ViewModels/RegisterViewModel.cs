@@ -20,5 +20,9 @@ namespace GIBDDfines
         [DataType(DataType.Password)]
         [Display(Name = "Подтвердить пароль")]
         public string PasswordConfirm { get; set; }
+
+        [Required]
+        [Display(Name = "Имя")]
+        public string UserName { get; set; }
     }
 }

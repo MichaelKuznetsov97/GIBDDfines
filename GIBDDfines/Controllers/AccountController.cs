@@ -30,17 +30,17 @@ namespace GIBDDfines.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new User { Email = model.Email, UserName = model.Email };
+                User user = new User { Email = model.Email, UserName = model.Email, nameSurname = model.UserName };
                 // Добавление нового пользователя
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     // установка куки
                     await _signInManager.SignInAsync(user, false);
+                    await _userManager.AddToRoleAsync(user, "user");
                     var msg = new
                     {
-                        message = "Добавлен новый пользователь: " + user.UserName                    
-
+                        message = "Добавлен новый пользователь: " + user.nameSurname                  
                     };
                     return Ok(msg);
                 }
@@ -53,8 +53,7 @@ namespace GIBDDfines.Controllers
                     var errorMsg = new
                     {
                         message = "Пользователь не добавлен.",
-                        error = ModelState.Values.SelectMany(e => e.Errors.Select(er =>
-                        er.ErrorMessage))
+                        error = ModelState.Values.SelectMany(e => e.Errors.Select(er => er.ErrorMessage))
                     };
                     return Ok(errorMsg);
                 }
@@ -71,6 +70,7 @@ namespace GIBDDfines.Controllers
             }
         }
 
+        //Вход в учетку
         [HttpPost]
         [Route("api/Account/Login")]
         //[ValidateAntiForgeryToken]
@@ -78,23 +78,25 @@ namespace GIBDDfines.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result =
-                await _signInManager.PasswordSignInAsync(model.Email,
-                model.Password, model.RememberMe, false);
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                //User user = await GetCurrentUserAsync();
                 if (result.Succeeded)
                 {
                     var msg = new
                     {
-                        message = "Выполнен вход пользователем: " + model.Email
+                        message = "Выполнен вход пользователем: " + model.Email,
+                        message1 = "Вы вошли как: "+ model.Email,
+                        enter = true
                     };
                     return Ok(msg);
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                    ModelState.AddModelError("", "Неправильный логин или пароль");
                     var errorMsg = new
                     {
                         message = "Вход не выполнен.",
+                        enter = false,
                         error = ModelState.Values.SelectMany(e => e.Errors.Select(er => er.ErrorMessage))
                     };
                     return Ok(errorMsg);
@@ -105,12 +107,15 @@ namespace GIBDDfines.Controllers
                 var errorMsg = new
                 {
                     message = "Вход не выполнен.",
+                    enter = false,
                     error = ModelState.Values.SelectMany(e => e.Errors.Select(er =>
                     er.ErrorMessage))
                 };
                 return Ok(errorMsg);
             }
         }
+
+        //Выход из учетки
         [HttpPost]
         [Route("api/Account/LogOff")]
         //[ValidateAntiForgeryToken]
@@ -118,9 +123,10 @@ namespace GIBDDfines.Controllers
         {
             // Удаление куки
             await _signInManager.SignOutAsync();
+
             var msg = new
-            {            
-                message = "Выполнен выход."
+            {
+                message = "Вы гость."
             };
             return Ok(msg);
         }

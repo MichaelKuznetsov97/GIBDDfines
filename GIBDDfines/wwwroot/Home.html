@@ -125,13 +125,14 @@
                                         <ul id="formError"></ul>
                                 </div>
                                 
-                                <div>
-                                <label for="">Email: </label><br />
-                                <input type="text" id="Email" name="Email">
+                                <div class="form-group">
+                                    <label for="Email">Email</label>
+                                    <input type="email" class="form-control" id="Email" aria-describedby="emailHelp" name="Email" placeholder="Еmail">
+                                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                                 </div>
-                                <div>
-                                <label for="">Пароль: </label><br />
-                                <input type="password" id="Password" name="Password">
+                                <div class="form-group">
+                                    <label for="Password">Пароль</label>
+                                    <input type="password" class="form-control" id="Password" name="Password" placeholder="Пароль">
                                 </div>
                         </form>
                         <button type="submit" id="loginBtn" class="btn btn-primary" onclick="ParseResponseMsg();">Вход</button>
@@ -178,6 +179,7 @@
         function GetCurrentUser() {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.open("POST", "http://localhost:13807/api/Account/isAuthenticated", true);
+
             xmlhttp.onreadystatechange = function () {
                 var myObj = "";
                 myObj = xmlhttp.responseText != "" ? JSON.parse(xmlhttp.responseText) : {}; 
@@ -191,16 +193,22 @@
             xmlhttp.send();
         }
 
-        function LogOff()
-        {
+        //Выход из профиля
+        function LogOff() {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.open("POST", "http://localhost:13807/api/Account/LogOff", true);
-            xmlhttp.send();
 
-            GetCurrentUser();
+            xmlhttp.onreadystatechange = function () {
+                document.getElementById("Message").innerHTML = "Вы гость."
+                document.getElementById("loginButton").innerHTML="<a class='btn btn-outline' href='#' data-toggle='modal' data-target='#autorizModal'>Войти</a>";
+            }
+            xmlhttp.send();
         }
 
-        function ParseResponseMsg() {
+        // Обработка клика по кнопке
+        document.getElementById("loginBtn").addEventListener("click", Login);
+        //Обработчик клика по кнопке
+        function Login() {
             // Считывание данных с формы
             email = document.getElementById("Email").value;
             password = document.getElementById("Password").value;
@@ -208,6 +216,8 @@
             xmlhttp.open("POST", "http://localhost:13807/api/Account/Login");
 
             xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            // Запрос на сервер
+            xmlhttp.send(JSON.stringify({ email: email, password: password }));
 
             xmlhttp.onreadystatechange = function () {
                 // Очистка контейнера вывода сообщений
@@ -218,7 +228,13 @@
                 }
                 // Обработка ответа от сервера
                 myObj = JSON.parse(this.responseText);
-                document.getElementById("msg").innerHTML = myObj.message;
+                
+                if(myObj.enter == true) {
+                    document.getElementById("msg").innerHTML = myObj.message;
+                    document.getElementById("Message").innerHTML = myObj.message1;
+                    document.getElementById("loginButton").innerHTML="<button class='btn btn-outline' onclick='LogOff();'>Выйти</button>";
+                    document.location.href = "http://localhost:13807/home.html";
+                }
                 // Вывод сообщений об ошибках
                 if (typeof myObj.error !== "undefined" && myObj.error.length > 0) {
                     for (var i = 0; i < myObj.error.length; i++) {
@@ -231,18 +247,11 @@
                 document.getElementById("Password").value = "";
             };
 
-            // Запрос на сервер
-            xmlhttp.send(JSON.stringify({
-            email: email,
-            password: password
-            }));
+
 
             //window.location.reload();
-            GetCurrentUser();
+            //GetCurrentUser();
         };
-        
-        // Обработка клика по кнопке
-        document.getElementById("loginBtn").addEventListener("click", ParseResponseMsg);
 
 
         //получение списка нарушений(в зависимости от семафора выбираются разные нарушения), далее только штрафы зарегистрированного пользователя
