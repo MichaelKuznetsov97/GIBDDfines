@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GIBDDfines.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace GIBDDfines.Controllers
 {
@@ -15,10 +16,12 @@ namespace GIBDDfines.Controllers
     public class PunishmentsController : Controller
     {
         private readonly modeldbGIBDD2Context _context;
+        private readonly UserManager<User> _userManager;
 
-        public PunishmentsController(modeldbGIBDD2Context context)
+        public PunishmentsController(modeldbGIBDD2Context context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Punishments
@@ -32,33 +35,64 @@ namespace GIBDDfines.Controllers
         [Route("~/api/punishmentsenter/{semafor}")]
         [HttpGet("{semafor}")]
         [Authorize]
-        public IActionResult GetPunishmentsenter([FromRoute] int semafor)
+        public async Task<IActionResult> GetPunishmentsenter([FromRoute] int semafor)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            User user = await _userManager.GetUserAsync(HttpContext.User);
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+            bool isUser = false;
+            foreach (var t in roles)
+            {
+                if (t == "user") { isUser = true; break; }
+                if (t == "admin") { isUser = false; break; }
+            }
+
+            List<Punishments> Temp = new List<Punishments>();
+
+            if (isUser)
+            {
+                AutoOwners ao = new AutoOwners();
+                _context.Punishments.Load();
+                _context.AutoOwners.Load();
+
+                foreach (var i in _context.AutoOwners)
+                    if (user.Number == i.Number)
+                    {
+                        ao = i; break;
+                    }
+
+                foreach (var t in _context.Punishments)
+                {
+                    if (t.IdAowner == ao.Id)
+                        Temp.Add(t);
+                }
+            }
+            else
+                foreach (var t in _context.Punishments)
+                    Temp.Add(t);
 
             List<Punishments> punishments = new List<Punishments>();
-            if(_context.Punishments != null) { 
-            if (semafor == 1)
-                foreach(var temp in _context.Punishments)
-                    if(temp.DatePay != null)
-                        punishments.Add(temp);
+            if(Temp != null)
+            { 
+                if (semafor == 1)
+                    foreach(var temp in Temp)
+                        if(temp.DatePay != null)
+                            punishments.Add(temp);
 
-            if (semafor == 2)
-                foreach (var temp in _context.Punishments)
-                    if(temp.DatePay == null)
-                        punishments.Add(temp);
+                if (semafor == 2)
+                    foreach (var temp in Temp)
+                        if(temp.DatePay == null)
+                            punishments.Add(temp);
 
-            if (semafor != 1 && semafor != 2)
-                foreach (var temp in _context.Punishments)
-                    punishments.Add(temp);
+                if (semafor != 1 && semafor != 2)
+                    foreach (var temp in Temp)
+                        punishments.Add(temp);
             }
-            if (punishments == null)
-            {
+            else
                 return NotFound();
-            }
             /*if (punishments.Count == 0)
             {
                 return Ok(null);

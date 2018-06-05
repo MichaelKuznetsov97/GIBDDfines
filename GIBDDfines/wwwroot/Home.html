@@ -260,6 +260,7 @@
         //получение списка нарушений(в зависимости от семафора выбираются разные нарушения), далее только штрафы зарегистрированного пользователя
         function LoadPunishments(semafor/*для обработки запроса на сервере*/) {
             GetCurrentUser();
+            GetCurrRole();
 
             var request = new XMLHttpRequest();
             request.open("GET", "http://localhost:13807/api/punishmentsenter/" + semafor, true);
@@ -285,10 +286,15 @@
                             for (var i in myObj) {
                                     var date = new Date(myObj[i].date);
                                     x += "<div class='max_shadow'>"
-                                    x += "<button type='button' onclick='Delete(" + myObj[i].id + ");' class='close'><img width='30px' src='images/delete_pict.png'></img></button>"
+                                    if(RoleCurrUser) 
+                                        x += "<button type='button' onclick='Delete(" + myObj[i].id + ");' class='close'><img width='30px' src='images/delete_pict.png'></img></button>"
                                     x += "<h6> Нарушение № " + myObj[i].id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj[i].penalty + "</h6>";
                                     if (myObj[i].datePay != null) { x += "<p>Статус: оплачен</p>" }
-                                    else { x += "<p>Статус: не оплачен</p>"; x += "<button type='button' style='margin-right:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj[i].id + ");'>Оплатить</button>" }
+                                    else { 
+                                        x += "<p>Статус: не оплачен</p>"; 
+                                        if(!RoleCurrUser)
+                                            x += "<button type='button' style='margin-right:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj[i].id + ");'>Оплатить</button>" 
+                                    }
                                     x += "<a class='btn btn-sm btn-outline-secondary' href='#' data-toggle='modal' data-target='#detailModal' onclick='DetailPunishment(" + myObj[i].id +")'>Подробнее</a>"
                                     x += "</div>"
                                     document.getElementById("punishsDiv").innerHTML = x;
@@ -359,8 +365,31 @@
         function Delete(id) {
             var request = new XMLHttpRequest();
             request.open("DELETE", "http://localhost:13807/api/punishments/"+ id);
+
+            request.onreadystatechange = function () {
+
+                if (request.status == 404) {
+                     // обработать ошибку
+                     alert("К сожалению, у вас недостаточно прав");
+                }
+            }
             request.send();
-            window.location.reload();
+            //window.location.reload();
+        }
+
+        var RoleCurrUser = false;
+        function GetCurrRole()
+        {
+            var request = new XMLHttpRequest();
+            request.open("POST", "http://localhost:13807/api/account/getrole");
+            request.onreadystatechange = function () {
+
+                if (request.status == 200) {
+                    myObj = JSON.parse(this.responseText);                   
+                    RoleCurrUser = myObj.role;
+                }
+            }
+            request.send();
         }
 
     </script>

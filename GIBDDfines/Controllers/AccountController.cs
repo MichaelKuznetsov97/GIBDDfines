@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GIBDDfines.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GIBDDfines.Controllers
 {
@@ -31,12 +32,14 @@ namespace GIBDDfines.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
             bool flag = false;
+            //если в бд не найдется акого автовладельца, значит у него нет водительского достоверения
             _context.AutoOwners.Load();
             foreach (var t in _context.AutoOwners)
             {
                 if (t.Number == model.Number) { flag = true; break; }
             }
 
+            //если такой пользователь уже есть, то ему не нужен еще один аккаунт
             foreach(var t in _userManager.Users)
             {
                 if(t.Number == model.Number) { flag = false; break; }
@@ -164,5 +167,23 @@ namespace GIBDDfines.Controllers
         }
 
         private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+
+        [HttpPost]
+        [Route("api/Account/GetRole")]
+        [Authorize]
+        public async Task<IActionResult> CurrentRole()
+        {
+            User user = await _userManager.GetUserAsync(HttpContext.User);
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+
+            var msg = new { role = false };
+            foreach (var t in roles)
+            {
+                if (t == "user") { msg = new { role = false }; break; }
+                if (t == "admin") { msg = new { role = true }; break; }
+            }
+
+            return Ok(msg);
+        }
     }
 }
