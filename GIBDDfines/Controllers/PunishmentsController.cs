@@ -110,8 +110,12 @@ namespace GIBDDfines.Controllers
                 return BadRequest(ModelState);
             }
 
-            var punishments = await _context.Punishments.SingleOrDefaultAsync(m => m.Id == id);
-
+            var punishments = await _context.Punishments
+                .Include(pun=>pun.IdAownerNavigation)
+                .Include(pun=>pun.IdAutoNavigation).ThenInclude(auto=>auto.IdMarkModelNavigation).ThenInclude(model=>model.IdMarkNavigation)
+                .Include(pun=>pun.IdPoliceNavigation).ThenInclude(pol=>pol.IdTitleNavigation)
+                .Include(pun=>pun.IdTpunishNavigation)
+                .SingleOrDefaultAsync(m => m.Id == id);
             if (punishments == null)
             {
                 return NotFound();
@@ -179,7 +183,7 @@ namespace GIBDDfines.Controllers
                 }
             }
 
-            return CreatedAtAction("GetPunishments", new { id = punishments.Id }, punishments);
+            return CreatedAtAction("GetPunishments", new { id = punishments.Id });
         }
 
         //удаление записи

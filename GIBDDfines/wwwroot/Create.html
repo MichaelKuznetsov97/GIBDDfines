@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Штрафы ГИБДД</title>
+
+    <!-- Bootstrap core CSS -->
+    <!--<link rel="stylesheet" href="lib2/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <!--<script src="lib2/bootstrap.min.js"></script>-->
+    <link href="css/myStyle.css" rel="stylesheet" />
+    <link href="css/CircButt.css" rel="stylesheet" />
+</head>
+
+<body onload="OnloadInform();">
+    <div class="container">
+
+        <!--Header-->
+        <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+            <h5 class="my-0 mr-md-auto font-weight-normal">Штрафы ГИБДД</h5>
+            <nav class="my-2 my-md-0 mr-md-3">
+                <a type="button" class="p-2 text-dark" href="home.html">Главная</a>                        
+                <a class="p-2 text-dark" href="#">Контакты</a>
+                <a class="p-2 text-dark" href="#">О приложении</a>
+            </nav>
+            <div>
+                <p id="Message"></p>
+                <div id="loginButton">
+                    <button class='btn btn-outline' onclick='LogOff();'>Выйти</button>
+                </div>    
+            </div>
+        </div>
+        <!--End Header-->
+
+        <!--Main-->
+        <div>
+            <br>
+            <!--<hr>-->
+            <h2>Добавление нарушения</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="inpDate">Дата нарушения</label>
+                        <input id="inpDate" class="form-control" type="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inpDescr">Краткое описание</label>
+                        <textarea id="inpDescr" class="form-control" type="text" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="inpPen">Сумма штрафа</label>
+                        <input id="inpPen" class="form-control" type="text" required>
+                    </div>
+                    <div class="form-group" id="selAowner">
+                    </div>
+                    <div class="form-group" id="selAuto">
+                    </div>
+                    <div class="form-group" id="selTPun">
+                    </div>
+                    <div class="form-group" id="selPolice">
+                    </div>
+                </form>
+            
+            <button onclick="CreatePunishment();" type="submit" class='btn btn-dark'>Добавить в базу</button>
+        
+        </div>
+        <!--End Main-->
+
+        <!--Footer-->
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+            <div class="row">
+                <div class="col-12 col-md">
+                    <small class="d-block mb-3 text-muted">Producted by KMA &copy; 2018</small>
+                </div>
+            </div>
+        </footer>
+        <!--End Footer-->
+    </div>
+
+    <script>
+
+        //Получение текущего пользователя
+        function GetCurrentUser() {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("POST", "http://localhost:13807/api/Account/isAuthenticated", true);
+
+            xmlhttp.onreadystatechange = function () {
+                var myObj = "";
+                myObj = xmlhttp.responseText != "" ? JSON.parse(xmlhttp.responseText) : {}; 
+                document.getElementById("Message").innerHTML = myObj.message;
+
+                if(myObj.guest)
+                    document.getElementById("loginButton").innerHTML="<a class='btn btn-outline' href='#' data-toggle='modal' data-target='#autorizModal'>Войти</a>";
+                else
+                    document.getElementById("loginButton").innerHTML="<button class='btn btn-outline' onclick='LogOff();'>Выйти</button>";
+            }
+            xmlhttp.send();
+        }
+
+        //Выход из профиля
+        function LogOff() {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("POST", "http://localhost:13807/api/Account/LogOff", true);
+
+            xmlhttp.onreadystatechange = function () {
+                document.location.href = "http://localhost:13807/home.html";
+            }
+            xmlhttp.send();           
+        }
+
+        function OnloadInform() {
+            GetCurrentUser();
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", "http://localhost:13807/api/create/onloadOwners", true);
+
+            xmlhttp.onreadystatechange = function () {
+                myObj = JSON.parse(this.responseText);
+                var x1 = "<select id = 'idAowner1' class='custom-select'><option selected>Выберите автовладельца</option>";
+                for(var t of myObj)
+                    x1 +="<option value="+t.id+">"+t.name+" номер ВУ: "+t.number+"</option>";
+                x1 +="</select>";
+                document.getElementById("selAowner").innerHTML = x1;
+            }
+            xmlhttp.send();
+
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", "http://localhost:13807/api/create/onloadAutoes", true);
+
+            xmlhttp.onreadystatechange = function () {
+                myObj = JSON.parse(this.responseText);
+                var x = "<select id = 'idAuto1' class='custom-select'><option selected>Выберите автомобиль</option>";
+                for(var t of myObj)
+                    x +="<option value="+t.id+">"+t.idMarkModelNavigation.idMarkNavigation.name+" "+t.idMarkModelNavigation.name+" "+t.number+"</option>";
+                x +="</select>";            
+                document.getElementById("selAuto").innerHTML = x;
+            }
+            xmlhttp.send();
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", "http://localhost:13807/api/create/onloadPolice", true);
+
+            xmlhttp.onreadystatechange = function () {
+                myObj = JSON.parse(this.responseText);
+                var x = "<select id = 'idPolice1' class='custom-select'><option selected>Выберите сотрудника ГИБДД</option>";
+                for(var t of myObj)
+                    x +="<option value="+t.id+">"+t.idTitleNavigation.name+" "+t.name+"</option>";
+                x +="</select>";            
+                document.getElementById("selPolice").innerHTML = x;
+            }
+            xmlhttp.send();
+
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", "http://localhost:13807/api/create/onloadTPun", true);
+
+            xmlhttp.onreadystatechange = function () {
+                myObj = JSON.parse(this.responseText);
+                var x = "<select id = 'idTPun1' class='custom-select'><option selected>Выберите тип нарушения</option>";
+                for(var t of myObj)
+                    x +="<option value="+t.id+">"+t.describe+"</option>";
+                x +="</select>";            
+                document.getElementById("selTPun").innerHTML = x;
+            }
+            xmlhttp.send();
+        }
+        
+        function CreatePunishment() {
+
+            //НАДО ПАРСИТЬ ПОЛЯ НА ЭТОЙ СТРАНИЦЕ!!!!!!!!!!
+            var date = document.getElementById("inpDate").value;
+            var describe = document.getElementById("inpDescr").value;
+
+            e = document.getElementById("selAowner1");
+            var idAowner = e.options[e.selectedIndex].value;
+
+            e = document.getElementById("selAuto1");
+            var idAuto = e.options[e.selectedIndex].value;
+            
+            e = document.getElementById("selPolice1");
+            var idPolice = e.options[e.selectedIndex].value;
+            
+            e = document.getElementById("selTPun1");
+            var idTPunish = e.options[e.selectedIndex].value;
+
+            var penalti = document.getElementById("inpPen").value;
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("POST", "http://localhost:13807/api/Punishments", true);
+
+            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xmlhttp.send(JSON.stringify({ date: date, describe: describe, idAowner: idAowner, 
+                    idAuto: idAuto, idPolice: idPolice, idTPunish: idTPunish, penalry: penalti }));
+
+            xmlhttp.onreadystatechange = function () {
+                if(xmlhttp.status == 200)
+                    alert("Происшествие успешно добавлено в бд");
+            }  
+        }
+        
+    </script>
+</body>

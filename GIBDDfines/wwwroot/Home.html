@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <!--<script src="lib2/bootstrap.min.js"></script>-->
     <link href="css/myStyle.css" rel="stylesheet" />
+    <link href="css/CircButt.css" rel="stylesheet" />
 </head>
 
 <body onload="LoadPunishments(0);">
@@ -56,6 +57,7 @@
                 <div id="punishsDiv" class="col-12"><!--сюда добавляются нарушения через js--></div>
             </div>
             
+            <div id="btnAdd"></div>
         <!--
         <br>
         <hr>
@@ -201,6 +203,7 @@
             xmlhttp.onreadystatechange = function () {
                 document.getElementById("Message").innerHTML = "Вы гость."
                 document.getElementById("loginButton").innerHTML="<a class='btn btn-outline' href='#' data-toggle='modal' data-target='#autorizModal'>Войти</a>";
+                document.getElementById("btnAdd").innerHTML = ""
                 LoadPunishments(0);
             }
             xmlhttp.send();
@@ -279,6 +282,9 @@
                         alert(request.status + ': ' + request.statusText);
                     } else {
                         // вывести результат
+                        if(RoleCurrUser)
+                            document.getElementById("btnAdd").innerHTML = "<div type='button' class='email-bt' onclick='CreatePunish();'><div class='text-call'><i class='fa fa-envelope' aria-hidden='true'></i><span>Добавить<br>штраф</span><span1>+</span1></div></div>"
+
                         var myObj = JSON.parse(request.responseText/*result*/);
                         var x = "";
                         if(myObj.length == 0) {x += "<p>Нарушений не найдено</p>"; document.getElementById("punishsDiv").innerHTML = x;}
@@ -308,6 +314,8 @@
 
         //получение подробной информации об одном из нарушений
         function DetailPunishment(id) {
+            GetCurrRole();
+
             var request = new XMLHttpRequest();
             //select = document.getElementById("deleteDiv");
             url = "http://localhost:13807/api/punishments/" + id;
@@ -328,12 +336,19 @@
                     var myObj = JSON.parse(request.responseText/*result*/);
 
                         var date = new Date(myObj.date);
+                        var date2 = new Date(myObj.idAownerNavigation.dateEntered);
                         x += "<h4> Нарушение № " + myObj.id + " дата нарушения: " + date.getDate() + "." + date.getMonth() + "." + date.getFullYear() + ", штраф в размере: " + myObj.penalty + "</h4>";
+                        x+= "<p> Марка модель автомобиля: "+myObj.idAutoNavigation.idMarkModelNavigation.idMarkNavigation.name+" "+myObj.idAutoNavigation.idMarkModelNavigation.name +" рег.номер: "+myObj.idAutoNavigation.number+"</p>"
+                        if(RoleCurrUser)
+                            x+="<p>Штраф выписан(кому): " +myObj.idAownerNavigation.name +" c ВУ №: "+myObj.idAownerNavigation.number+ " выданным: "+ date2.getDate() + "." + date2.getMonth() + "." + date2.getFullYear()+"</p>";
+                        x+="<p>Тип нарушения: "+myObj.idTpunishNavigation.describe+"</p>";
+                        x+="<p>Штраф выписан(кем): "+myObj.idPoliceNavigation.idTitleNavigation.name+" ГИБДД "+myObj.idPoliceNavigation.name+"</p>";
                         if (myObj.datePay != null) { x += "<p>Статус: оплачен</p>" }
                         else
                         {
                             x += "<p>Статус: не оплачен</p>"
-                            x += "<button type='button' style='margin-left:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj.id + ");'>Оплатить</button>"
+                            if(!RoleCurrUser)
+                                x += "<button type='button' style='margin-left:10px' class='btn btn-success btn-sm' onclick='Payed(" + myObj.id + ");'>Оплатить</button>"
                         }
                         
                         document.getElementById("detalsModal").innerHTML = x;
@@ -378,8 +393,7 @@
         }
 
         var RoleCurrUser = false;
-        function GetCurrRole()
-        {
+        function GetCurrRole() {
             var request = new XMLHttpRequest();
             request.open("POST", "http://localhost:13807/api/account/getrole");
             request.onreadystatechange = function () {
@@ -392,6 +406,9 @@
             request.send();
         }
 
+        function CreatePunish() {
+            document.location.href = "http://localhost:13807/create.html";
+        }
     </script>
 </body>
 </html>
